@@ -1,5 +1,6 @@
 const mongoose=require('mongoose');
 const {Schema}=mongoose; 
+//schema of users
 const UserSchema= new Schema({
     name:{
         type: String,

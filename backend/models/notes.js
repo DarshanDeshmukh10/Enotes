@@ -1,4 +1,5 @@
 const mongoose=require('mongoose');
+//schema of notes
 const NoteSchema= new Schema({
     title:{
         type: String,
