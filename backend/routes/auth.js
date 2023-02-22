@@ -5,7 +5,7 @@ const {body,validationResult}=require('express-validator');
 const bcrypt=require('bcryptjs');
 var jwt=require('jsonwebtoken');
 const JWT_SECRET='Darshanisagoodboy';
-var fetchuser=require('../middleware/fetchuser')
+var fetchuser=require('../middleware/fetchuser');
 //Router  1 : Creating a user 
 //name and mail should be greater than 3 character else showing errors   
 router.post('/createUser',[
