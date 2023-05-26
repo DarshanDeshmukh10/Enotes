@@ -6,23 +6,25 @@ const bcrypt=require('bcryptjs');
 var jwt=require('jsonwebtoken');
 const JWT_SECRET='Darshanisagoodboy';
 var fetchuser=require('../middleware/fetchuser');
-//Router  1 : Creating a user 
+//Router  1 : Creating a user                       
 //name and mail should be greater than 3 character else showing errors   
+
 router.post('/createUser',[
     body('name','Enter a valid name').isLength({min:3}),
     body('email','Enter a valid email').isEmail(),
     body('password','Password must be at least 3 characters').isLength({min:3})
 ],async(req,res)=>{
+    let success = false;
     //if error then return error 
     const errors=validationResult(req);
     if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array() })
+        return res.status(400).json({success,errors: errors.array() })
     }
     //whether user with same email exist already
     try{
     let user =await User.findOne({email: req.body.email});
     if(user){
-        return res.status(400).json({error:"Sorry a user already exist with same E-mail"})
+        return res.status(400).json({success,error:"Sorry a user already exist with same E-mail"})
     }
     const salt=await bcrypt.genSalt(10);
     const secPass=await bcrypt.hash(req.body.password,salt);
@@ -39,7 +41,8 @@ router.post('/createUser',[
         }
     }
         const authtoken=jwt.sign(data,JWT_SECRET);
-        res.json({authtoken});
+        success=true;
+        res.json({success,authtoken});
     }
     //showing errors 
     catch(error){
@@ -54,6 +57,7 @@ router.post('/login',[
     body('email','Enter a valid email').isEmail(),
     body('password','Password cannot be blank').exists(),
 ],async(req,res)=>{
+    let success=false;
 //if there are errors then return then
 const errors=validationResult(req);
 if(!errors.isEmpty()){
@@ -71,7 +75,8 @@ if(!user)
 const passwordCompare=await bcrypt.compare(password, user.password);
 if(!passwordCompare)
 {
-    return res.status(400).json({error:"Password is wrong"});
+    success=false
+    return res.status(400).json({success,error:"Password is wrong"});
 }
 const data={
     user:{
@@ -79,7 +84,8 @@ const data={
     }
 }
 const authtoken=jwt.sign(data,JWT_SECRET);
-res.json({authtoken});
+success=true;
+res.json({success,authtoken});
 }
 catch(error){
     console.error(error.message);
